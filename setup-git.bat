@@ -13,6 +13,17 @@ if errorlevel 1 (
   exit /b 1
 )
 
+git config user.name >nul 2>&1
+if errorlevel 1 (
+  echo.
+  echo Сначала укажите имя и email для Git ^(один раз^):
+  echo   git config --global user.name "Ваше Имя"
+  echo   git config --global user.email "ваш@email.com"
+  echo.
+  pause
+  exit /b 1
+)
+
 if not exist ".git" (
   git init
   echo Создан репозиторий в папке проекта.

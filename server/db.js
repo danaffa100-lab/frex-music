@@ -65,6 +65,17 @@ CREATE TABLE IF NOT EXISTS user_playlist (
   added_at TIMESTAMPTZ DEFAULT NOW(),
   PRIMARY KEY (user_id, track_id)
 );
+
+CREATE TABLE IF NOT EXISTS subscription_orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  plan_name VARCHAR(64) NOT NULL,
+  amount INTEGER NOT NULL,
+  payer_name TEXT NOT NULL,
+  payer_email TEXT NOT NULL,
+  status VARCHAR(32) DEFAULT 'completed',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 `;
 
 const SCHEMA_SQLITE = `
@@ -110,6 +121,17 @@ CREATE TABLE IF NOT EXISTS user_playlist (
   track_id INTEGER REFERENCES tracks(id) ON DELETE CASCADE,
   added_at TEXT DEFAULT (datetime('now')),
   PRIMARY KEY (user_id, track_id)
+);
+
+CREATE TABLE IF NOT EXISTS subscription_orders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  plan_name TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  payer_name TEXT NOT NULL,
+  payer_email TEXT NOT NULL,
+  status TEXT DEFAULT 'completed',
+  created_at TEXT DEFAULT (datetime('now'))
 );
 `;
 

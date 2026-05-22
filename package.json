@@ -4,6 +4,7 @@
   "description": "Музыкальный сервис в стиле Яндекс Музыки",
   "main": "server/index.js",
   "scripts": {
+    "build": "node scripts/sync-static.js",
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "init-db": "node server/init-db.js",

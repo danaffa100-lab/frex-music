@@ -244,12 +244,90 @@ router.delete('/my-playlist/:trackId', requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
+function digitsOnly(s) {
+  return String(s || '').replace(/\D/g, '');
+}
+
+function luhnCheck(num) {
+  let sum = 0;
+  let alt = false;
+  for (let i = num.length - 1; i >= 0; i--) {
+    let n = parseInt(num[i], 10);
+    if (alt) {
+      n *= 2;
+      if (n > 9) n -= 9;
+    }
+    sum += n;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+router.post('/subscription/checkout', requireAuth, async (req, res) => {
+  try {
+    const { fullName, email, cardNumber, expiry, cvc, agreeTerms } = req.body;
+    const u = await getUserById(req.user.id);
+    if (!u) return res.status(401).json({ error: 'Войдите в аккаунт' });
+    if (bool(u.has_subscription)) {
+      return res.status(400).json({ error: 'Подписка уже оформлена' });
+    }
+
+    if (!agreeTerms) {
+      return res.status(400).json({ error: 'Подтвердите условия подписки' });
+    }
+    if (!fullName || fullName.trim().length < 2) {
+      return res.status(400).json({ error: 'Укажите имя и фамилию' });
+    }
+    const emailNorm = String(email || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) {
+      return res.status(400).json({ error: 'Укажите корректный email' });
+    }
+
+    const card = digitsOnly(cardNumber);
+    if (card.length !== 16 || !luhnCheck(card)) {
+      return res.status(400).json({ error: 'Номер карты неверный (16 цифр)' });
+    }
+
+    const exp = String(expiry || '').trim();
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(exp)) {
+      return res.status(400).json({ error: 'Срок: формат MM/YY' });
+    }
+    const [mm, yy] = exp.split('/').map(Number);
+    const now = new Date();
+    const expDate = new Date(2000 + yy, mm, 0);
+    if (expDate < now) {
+      return res.status(400).json({ error: 'Срок действия карты истёк' });
+    }
+
+    const cvcDigits = digitsOnly(cvc);
+    if (cvcDigits.length !== 3) {
+      return res.status(400).json({ error: 'CVC: 3 цифры' });
+    }
+
+    const planName = 'Frex Plus — 1 месяц';
+    const amount = 299;
+
+    await query(
+      `INSERT INTO subscription_orders (user_id, plan_name, amount, payer_name, payer_email, status)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [req.user.id, planName, amount, fullName.trim(), emailNorm, 'completed']
+    );
+    await query('UPDATE users SET has_subscription = $1 WHERE id = $2', [
+      toBoolInt(true),
+      req.user.id,
+    ]);
+
+    res.json({ ok: true, message: 'Подписка Frex Plus оформлена' });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.post('/subscription/buy', requireAuth, async (req, res) => {
-  await query('UPDATE users SET has_subscription = $1 WHERE id = $2', [
-    toBoolInt(true),
-    req.user.id,
-  ]);
-  res.json({ ok: true, message: 'Подписка активирована (демо)' });
+  res.status(403).json({
+    error: 'Оформите подписку через форму оплаты',
+    needsCheckout: true,
+  });
 });
 
 // ——— Admin ———

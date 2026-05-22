@@ -1,6 +1,9 @@
 node_modules/
 data/
 uploads/
+/css/
+/js/
+/assets/
 .env
 *.db
 .DS_Store

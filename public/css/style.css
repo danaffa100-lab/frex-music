@@ -571,6 +571,44 @@ html, body {
   font-size: 24px;
 }
 
+.modal-wide {
+  max-width: 440px;
+}
+
+.sub-modal-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--yellow);
+  margin: -12px 0 8px;
+}
+
+.sub-modal-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  margin-top: 3px;
+  accent-color: var(--yellow);
+}
+
 .modal .tabs {
   display: flex;
   gap: 8px;

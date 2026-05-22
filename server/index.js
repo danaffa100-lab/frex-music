@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -23,9 +24,27 @@ app.use(authMiddleware);
 const rootDir = path.join(__dirname, '..');
 const indexHtml = path.join(rootDir, 'index.html');
 
+const publicDir = path.join(rootDir, 'public');
+
 app.use('/api', routes);
 app.use('/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use(express.static(path.join(rootDir, 'public')));
+function staticDir(sub) {
+  const inPublic = path.join(publicDir, sub);
+  const inRoot = path.join(rootDir, sub);
+  return [inPublic, inRoot].filter((p) => fs.existsSync(p));
+}
+
+for (const dir of ['css', 'js', 'assets']) {
+  for (const folder of staticDir(dir)) {
+    app.use(`/${dir}`, express.static(folder, { maxAge: '1d', fallthrough: true }));
+  }
+}
+app.use(express.static(publicDir));
+app.use(express.static(rootDir, { index: false }));
+
+function isAssetPath(urlPath) {
+  return /\.(css|js|svg|png|jpg|jpeg|webp|gif|ico|mp3|wav|ogg|map)$/i.test(urlPath);
+}
 
 app.get('/', (req, res) => {
   res.sendFile(indexHtml);
@@ -34,6 +53,9 @@ app.get('/', (req, res) => {
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
     return res.status(404).json({ error: 'Not found' });
+  }
+  if (isAssetPath(req.path)) {
+    return res.status(404).type('text/plain').send('File not found');
   }
   res.sendFile(indexHtml);
 });

@@ -102,21 +102,81 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   await loadAll();
 });
 
-document.getElementById('btn-buy-sub').addEventListener('click', async () => {
+function openSubModal() {
   if (!state.user) {
     document.getElementById('auth-modal').classList.add('open');
+    showToast('Сначала войдите в аккаунт');
     return;
   }
+  if (state.user.hasSubscription || state.user.isAdmin) {
+    showToast('Подписка уже активна');
+    return;
+  }
+  document.getElementById('sub-error').textContent = '';
+  document.getElementById('sub-form').reset();
+  document.getElementById('sub-modal').classList.add('open');
+}
+
+function closeSubModal() {
+  document.getElementById('sub-modal').classList.remove('open');
+}
+
+document.getElementById('btn-buy-sub').addEventListener('click', openSubModal);
+
+document.getElementById('btn-sub-cancel').addEventListener('click', closeSubModal);
+
+document.getElementById('sub-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'sub-modal') closeSubModal();
+});
+
+document.querySelector('[name="cardNumber"]')?.addEventListener('input', (e) => {
+  const v = e.target.value.replace(/\D/g, '').slice(0, 16);
+  e.target.value = v.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+});
+
+document.querySelector('[name="expiry"]')?.addEventListener('input', (e) => {
+  let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+  if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
+  e.target.value = v;
+});
+
+document.getElementById('sub-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const errEl = document.getElementById('sub-error');
+  const btn = document.getElementById('btn-sub-submit');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Обработка…';
   try {
-    await api('/subscription/buy', { method: 'POST' });
+    await new Promise((r) => setTimeout(r, 1200));
+    await api('/subscription/checkout', {
+      method: 'POST',
+      body: JSON.stringify({
+        fullName: fd.get('fullName'),
+        email: fd.get('email'),
+        cardNumber: fd.get('cardNumber'),
+        expiry: fd.get('expiry'),
+        cvc: fd.get('cvc'),
+        agreeTerms: fd.get('agreeTerms') === 'on',
+      }),
+    });
     const me = await api('/auth/me');
     state.user = me.user;
+    state.canPlayFull = true;
     updateUserUI();
-    showToast('Подписка активирована!');
-  } catch (e) {
-    showToast(e.message);
+    closeSubModal();
+    showToast('Подписка Frex Plus оформлена!');
+    await loadAll();
+  } catch (err) {
+    errEl.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Оплатить 299 ₽';
   }
 });
+
+window.openSubModal = openSubModal;
 
 function updateUserUI() {
   const badge = document.getElementById('user-badge');
@@ -495,7 +555,7 @@ async function loadMyPlaylist() {
     renderTrackList('my-playlist-content', tracks, tracks);
   } catch (e) {
     el.innerHTML = `<div class="empty-state"><p>${escapeHtml(e.message)}</p>
-      <button class="btn btn-yellow" style="margin-top:16px" onclick="document.getElementById('btn-buy-sub').click()">Оформить подписку</button></div>`;
+      <button class="btn btn-yellow" style="margin-top:16px" type="button" onclick="openSubModal()">Оформить подписку</button></div>`;
   }
 }
 

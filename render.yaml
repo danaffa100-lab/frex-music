@@ -2,7 +2,7 @@ services:
   - type: web
     name: frex-music
     runtime: node
-    buildCommand: npm install && npm run init-db
+    buildCommand: npm install && npm run build && npm run init-db
     startCommand: npm start
     envVars:
       - key: NODE_ENV

@@ -38,6 +38,15 @@ git status
 
 В `git status` должны быть только файлы проекта (`index.html`, `server`, `public`, `package.json`…), **без** AppData и `.android`.
 
+Если при commit пишет **Author identity unknown**, один раз выполните:
+
+```cmd
+git config --global user.name "Danil"
+git config --global user.email "ваш-email@example.com"
+```
+
+(Email можно любой — для GitHub лучше тот, что привязан к аккаунту.)
+
 Если всё верно:
 
 ```cmd
