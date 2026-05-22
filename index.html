@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frex Music — Река и Волна</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="waves-bg" aria-hidden="true">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+  <div class="river-glow" aria-hidden="true"></div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">F</div>
+        <span>Frex Music</span>
+      </div>
+      <button class="nav-item nav-wave" data-page="my-wave">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 12c2-4 6-6 10-6s8 2 10 6c-2 4-6 6-10 6S4 16 2 12zm10-4a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4z"/></svg>
+        <span>Моя волна</span>
+      </button>
+      <button class="nav-item active" data-page="home">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8v10h-6v-6H9v6H3V11l9-8z"/></svg>
+        <span>Главная</span>
+      </button>
+      <button class="nav-item" data-page="playlists">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4V6zm0 5h10v2H4v-2zm0 5h16v2H4v-2z"/></svg>
+        <span>Плейлисты</span>
+      </button>
+      <button class="nav-item" data-page="tracks">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+        <span>Все треки</span>
+      </button>
+      <button class="nav-item" data-page="my-playlist" id="nav-my-playlist">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span>Мой плейлист</span>
+      </button>
+      <button class="nav-item hidden" data-page="admin" id="nav-admin">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <span>Админ</span>
+      </button>
+      <div class="sidebar-footer">
+        <div class="user-badge" id="user-badge">Гость</div>
+        <button class="btn btn-yellow btn-block" id="btn-auth">Войти</button>
+        <button class="btn btn-outline btn-block hidden" id="btn-logout">Выйти</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="page active" id="page-home">
+        <div class="hero">
+          <h1>Река <span class="accent">и</span> Волна</h1>
+          <p>Слушай музыку в жёлтом потоке Frex. Без подписки — 20 секунд превью каждого трека.</p>
+        </div>
+        <div class="my-wave-banner" id="home-wave-banner" data-page="my-wave">
+          <div class="my-wave-banner-visual" aria-hidden="true">
+            <span class="pulse-ring"></span>
+            <span class="pulse-ring delay"></span>
+          </div>
+          <div>
+            <h3>Моя волна</h3>
+            <p>Бесконечный поток треков — как в Яндекс Музыке</p>
+          </div>
+          <button class="btn btn-yellow" type="button" id="btn-home-wave">Слушать</button>
+        </div>
+        <div class="subscription-banner hidden" id="sub-banner">
+          <div>
+            <h3>Полная версия Frex Plus</h3>
+            <p>Слушай без ограничений и собирай свой плейлист</p>
+          </div>
+          <button class="btn btn-yellow" id="btn-buy-sub">Оформить подписку</button>
+        </div>
+        <h2 class="section-title">Плейлисты</h2>
+        <div class="cards-grid" id="home-playlists"></div>
+        <h2 class="section-title">Новые треки</h2>
+        <div class="track-list" id="home-tracks"></div>
+      </section>
+
+      <section class="page" id="page-my-wave">
+        <div class="my-wave-page">
+          <div class="my-wave-disc" id="wave-disc">
+            <img id="wave-disc-cover" src="/assets/default-cover.svg" alt="">
+            <div class="my-wave-disc-glow"></div>
+          </div>
+          <h1>Моя волна</h1>
+          <p class="my-wave-sub" id="wave-status">Персональный поток Frex — треки подбираются автоматически</p>
+          <p class="my-wave-now" id="wave-now"></p>
+          <div class="my-wave-actions">
+            <button class="btn-wave-play" type="button" id="btn-start-wave" title="Слушать">▶</button>
+            <button class="btn-wave-secondary" type="button" id="btn-wave-next" title="Следующий">⏭</button>
+            <button class="btn-wave-secondary" type="button" id="btn-wave-dislike" title="Пропустить">👎</button>
+          </div>
+        </div>
+        <h2 class="section-title">В очереди волны</h2>
+        <div class="track-list" id="wave-queue"></div>
+      </section>
+
+      <section class="page" id="page-playlists">
+        <div class="hero"><h1>Плейлисты</h1><p>Подборки в стиле реки и волны</p></div>
+        <div class="cards-grid" id="all-playlists"></div>
+      </section>
+
+      <section class="page" id="page-playlist-detail" style="display:none">
+        <div class="hero" id="playlist-detail-header"></div>
+        <div class="track-list" id="playlist-tracks"></div>
+      </section>
+
+      <section class="page" id="page-tracks">
+        <div class="hero"><h1>Все треки</h1></div>
+        <div class="track-list" id="all-tracks"></div>
+      </section>
+
+      <section class="page" id="page-my-playlist">
+        <div class="hero"><h1>Мой плейлист</h1><p>Доступен с активной подпиской</p></div>
+        <div id="my-playlist-content"></div>
+      </section>
+
+      <section class="page" id="page-admin">
+        <div class="hero"><h1>Панель администратора</h1></div>
+        <div class="admin-grid" id="admin-stats"></div>
+        <div class="admin-panel">
+          <h2 class="section-title">Загрузить трек</h2>
+          <form id="upload-form">
+            <div class="form-group">
+              <label>Название</label>
+              <input type="text" name="title" required placeholder="Название песни">
+            </div>
+            <div class="form-group">
+              <label>Исполнитель</label>
+              <input type="text" name="artist" placeholder="Исполнитель">
+            </div>
+            <div class="form-group">
+              <label>Плейлист (опционально)</label>
+              <select name="playlistId" id="upload-playlist-select"></select>
+            </div>
+            <div class="form-group">
+              <label>Аудио (mp3, wav…)</label>
+              <div class="upload-zone" onclick="document.getElementById('audio-file').click()">
+                <span id="audio-label">Выберите файл</span>
+                <input type="file" id="audio-file" name="audio" accept="audio/*" hidden required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Обложка</label>
+              <div class="upload-zone" onclick="document.getElementById('cover-file').click()">
+                <span id="cover-label">Выберите изображение</span>
+                <input type="file" id="cover-file" name="cover" accept="image/*" hidden>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-yellow">Загрузить</button>
+          </form>
+        </div>
+        <div class="admin-panel">
+          <h2 class="section-title">Треки</h2>
+          <table class="admin-table"><thead><tr><th>ID</th><th>Название</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="admin-tracks-tbody"></tbody></table>
+        </div>
+        <div class="admin-panel">
+          <h2 class="section-title">Пользователи</h2>
+          <table class="admin-table"><thead><tr><th>ID</th><th>Логин</th><th>Подписка</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="admin-users-tbody"></tbody></table>
+        </div>
+      </section>
+    </main>
+
+    <footer class="player-bar">
+      <div class="player-track-info">
+        <img class="player-cover" id="player-cover" src="/assets/default-cover.svg" alt="">
+        <div class="player-meta">
+          <h4 id="player-title">Выберите трек</h4>
+          <p id="player-artist">Frex Music</p>
+        </div>
+      </div>
+      <div class="player-controls">
+        <div class="player-buttons">
+          <button class="player-btn" id="btn-prev" title="Назад">⏮</button>
+          <button class="player-btn play-main" id="btn-play">▶</button>
+          <button class="player-btn" id="btn-next" title="Вперёд">⏭</button>
+        </div>
+        <div class="progress-wrap">
+          <span id="time-current">0:00</span>
+          <div class="progress-bar" id="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <span id="time-total">0:00</span>
+          <span class="preview-badge hidden" id="preview-badge">Превью 20 сек</span>
+        </div>
+      </div>
+      <div class="volume-wrap">
+        <span>🔊</span>
+        <input type="range" id="volume" min="0" max="100" value="80">
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <h2>Frex Music</h2>
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Вход</button>
+        <button class="tab" data-tab="register">Регистрация</button>
+      </div>
+      <form id="auth-form">
+        <div class="form-group">
+          <label>Логин</label>
+          <input type="text" name="username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>Пароль</label>
+          <input type="password" name="password" required autocomplete="current-password">
+        </div>
+        <div class="form-error" id="auth-error"></div>
+        <button type="submit" class="btn btn-yellow btn-block">Продолжить</button>
+      </form>
+    </div>
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+  <div class="toast" id="toast"></div>
+  <script src="/js/app.js"></script>
+</body>
+</html>
